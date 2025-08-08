@@ -1,0 +1,3 @@
+venv
+k8s/secrets.yaml
+apps/frontend/public/img/*.jpg

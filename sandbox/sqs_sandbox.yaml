@@ -1,0 +1,22 @@
+apiVersion: signadot.com/v1
+kind: Sandbox
+name: sqs-counsumer-sandbox
+spec:
+  labels:
+    app: "sns-sqs-fanout-sandbox"
+  description: Isolated sandbox environments to enable sqs messgae routing
+  cluster: "@{cluster}"
+  forks:
+  - forkOf:
+      kind: Deployment
+      name: consumer-deployment
+      namespace: aws-sqs-app
+    customizations:
+      env:
+        - name: SANDBOX_NAME
+          value: "sqs-counsumer-sandbox"   
+  defaultRouteGroup:
+    endpoints:
+    - name: frontend
+      target: http://frontend-service.aws-sqs-app.svc:8080
+         
