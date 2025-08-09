@@ -2,12 +2,14 @@
 <html>
 <meta charset="ISO-8859-1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+
 <head>
     <title>AWS SQS Demo</title>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
@@ -53,69 +55,105 @@
         }
 
         .log-group-header {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: #768aad;
+            background-color: #f8f9fa;
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+            font-size: 0.85em;
         }
 
         .log-group-entries {
-            margin-left: 20px;
-            margin-bottom: 20px;
+            margin-left: 15px;
+            margin-bottom: 12px;
+            padding: 6px 8px;
+            background-color: #ffffff;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+            font-size: 0.8em;
+        }
+
+        .log-entry-row {
+            margin-bottom: 3px;
+            padding: 2px 0;
+        }
+
+        .log-time {
+            min-width: 70px;
+            font-size: 0.90em;
         }
     </style>
 </head>
+
 <body>
     <div class="container text-center margintop">
         <h1>AWS SQS Demo</h1>
         <h4><em>Publish Messages On Demand</em></h4>
+        <p class="text-muted small mb-0">Add a message body, click "Publish" and see how it flows through the different
+            microservices.</p>
         <div class="space"></div>
 
-        <div class="row mx-auto">
-            <div class="col">
-                <form class="row g-3 align-items-center">
-                    <div class="col-auto">
-                        <span class="col-form-label fw-medium">Message ID:</span>
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">AWS SQS Demo - Message Publisher</h5>
                     </div>
-
-                    <div class="col-auto">
-                        <input type="text" disabled class="form-control" id="messageID">
+                    <div class="card-body">
+                        <!-- Log Entries and Architecture Row -->
+                        <div class="row">
+                            <div class="col-12 col-lg-7">
+                                <div class="card">
+                                    <div class="card-body p-2">
+                                        <!-- Message Publisher Form -->
+                                        <form class="row g-2 mb-3 text-start">
+                                            <div class="col-auto">
+                                                <label for="messageID" class="form-label fw-medium small mb-1">Message
+                                                    ID:</label>
+                                                <input type="text" disabled class="form-control form-control-sm"
+                                                    id="messageID" style="min-width: 100px;">
+                                            </div>
+                                            <div class="col">
+                                                <label for="messageBody" class="form-label fw-medium mb-1">Message
+                                                    Body:</label>
+                                                <input type="text" class="form-control" id="messageBody"
+                                                    placeholder="Enter your message...">
+                                            </div>
+                                            <div class="col-auto align-self-end">
+                                                <button id="publishMsg" type="submit"
+                                                    class="btn btn-primary button me-2">
+                                                    <i class="bi bi-send"></i> Publish
+                                                </button>
+                                                <button id="clearLog" type="submit"
+                                                    class="btn btn-outline-danger button">
+                                                    <i class="bi bi-trash"></i> Clear Log
+                                                </button>
+                                            </div>
+                                        </form>
+                                        <hr class="my-3">
+                                        <!-- Log entries header and container -->
+                                        <h6 class="mb-2 fw-medium">Log Entries</h6>
+                                        <div id="message-log" >
+                                            <!-- Log entries will be dynamically added here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-5">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">Architecture</h6>
+                                    </div>
+                                    <div class="card-body text-center p-2">
+                                        <img src="/static/img/architecture.jpg"
+                                            class="img-fluid" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="col-auto">
-                        <span class="col-form-label fw-medium">Message Body:</span>
-                    </div>
-
-                    <div class="col">
-                        <input type="text" class="form-control" id="messageBody">
-                    </div>
-
-                    <div class="col-auto">
-                        <button id="publishMsg" type="submit" class="btn btn-primary button">Publish</button>
-                    </div>
-
-                    <div class="col-auto">
-                        <button id="clearLog" type="submit" class="btn btn-danger button">Clear Log</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="margintop">
-            Add a message body, click "Publish" and see how it flows through the
-            different microservices.
-        </div>
-
-        <div class="row" style="margin-top: 40px; margin-bottom: 15px;">
-            <div class="col-9 text-start">
-                <h4>Log Entries:</h4>
-            </div>
-            <div class="col-3 text-start">
-                <h4>Architecture:</h4>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-9" id="message-log"></div>
-            <div class="col-3">
-                <img src="img/architecture.jpg" width="200" />
+                </div>
             </div>
         </div>
 
@@ -170,7 +208,7 @@
                 'Request Scope  >  msgID: ' + msgID + ', msgBody: "' + context.message.body + '", routingKey: <span id="' + msgID + '-rk">""</span>' +
                 '</div>' +
                 '</div>' +
-                ' <div class="row log-group-entries" id="' + msgID + '-entries">' +
+                ' <div class="row log-group-entries" style="width: 95% !important;" id="' + msgID + '-entries">' +
                 '<div/>' +
                 '</div>'
             );
@@ -200,8 +238,8 @@
         }
 
         $('#' + msgID + '-entries').prepend(
-            '<div class="row">' +
-            '<div class="col-auto text-end fw-bold">' + time + '</div>' +
+            '<div class="row log-entry-row">' +
+            '<div class="col-auto text-end fw-bold log-time">' + time + '</div>' +
             '<div class="col text-start">' +
             '<span class="' + sourceColor + ' fw-bold marginright">' + source + '</span>' +
             '<em class="' + color + ' fw-bold">' + text + '.</em>' +
