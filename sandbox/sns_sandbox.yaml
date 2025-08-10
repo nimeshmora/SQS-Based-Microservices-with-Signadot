@@ -17,8 +17,4 @@ spec:
           value: "sns-sqs-fanout-sandbox"
         - name: SNS_FANOUT_PUBLISH
           value: "true"
-  defaultRouteGroup:
-    endpoints:
-    - name: frontend
-      target: http://frontend-service.aws-sqs-app.svc:8080
     

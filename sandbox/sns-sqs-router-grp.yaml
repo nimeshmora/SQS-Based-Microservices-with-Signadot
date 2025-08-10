@@ -1,12 +1,9 @@
 name: sns-sqs-router-grp
 spec:
-  cluster: "crop-staging-1"
+  cluster: "@{cluster}"
   description: "route group for testing multiple sandboxes together"
   match:
     any:
     - label:
         key: app
         value: sns-sqs-fanout-sandbox
-  endpoints:
-  - name: frontend-endpoint
-    target: http://frontend-service.aws-sqs-app.svc:8080

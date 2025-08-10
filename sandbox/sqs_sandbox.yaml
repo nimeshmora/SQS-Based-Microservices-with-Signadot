@@ -14,9 +14,5 @@ spec:
     customizations:
       env:
         - name: SANDBOX_NAME
-          value: "sqs-counsumer-sandbox"   
-  defaultRouteGroup:
-    endpoints:
-    - name: frontend
-      target: http://frontend-service.aws-sqs-app.svc:8080
+          value: "sqs-counsumer-sandbox"
          
