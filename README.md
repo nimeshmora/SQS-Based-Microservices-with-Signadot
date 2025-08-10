@@ -11,13 +11,13 @@ This project demonstrates a simple application that interacts with Amazon Simple
 
 Below is the high-level architecture of the project.
 
-![Project Architecture](./frontend/public/img/project-architecture.png)
+![Project Architecture](./apps/frontend/public/img/project-architecture.png)
 
 ## 3. SQS Architecture
 
 The following diagram illustrates the specific AWS SQS integration within the application.
 
-![SQS Architecture](./frontend/public/img/sqs-architecture.png)
+![SQS Architecture](./apps/frontend/public/img/sqs-architecture.png)
 
 ## Getting Started
 
