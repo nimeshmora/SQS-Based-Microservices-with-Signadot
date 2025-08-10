@@ -17,7 +17,7 @@ Below is the high-level architecture of the project.
 
 The following diagram illustrates the specific AWS SQS integration within the application.
 
-![SQS Architecture](./apps/frontend/public/img/architecture.png)
+![SQS Architecture](./apps/frontend/public/img/architecture.jpg)
 
 ## Getting Started
 
