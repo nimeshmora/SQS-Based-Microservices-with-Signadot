@@ -67,12 +67,12 @@ For the application to communicate with AWS SQS, you need to provide AWS credent
     apiVersion: v1
     kind: Secret
     metadata:
-      name: aws-secrets
-      namespace: sqs-demo
+    name: aws-credentials
+    namespace: aws-sqs-app
     type: Opaque
     data:
-      aws_access_key_id: YOUR_BASE64_ENCODED_ACCESS_KEY
-      aws_secret_access_key: YOUR_BASE64_ENCODED_SECRET_KEY
+    AWS_ACCESS_KEY_ID: < YOUR_BASE64_ENCODED_ACCESS_KEY >
+    AWS_SECRET_ACCESS_KEY: < YOUR_BASE64_ENCODED_SECRET_KEY >
     ```
 
 #### 7. Build the Docker Image
