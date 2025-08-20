@@ -54,6 +54,7 @@ spec:
           - name: BASELINE_NAME
             value: "producer-deployment"
         command:
+          - "opentelemetry-instrument"
           - "python"
           - "-u" # for unbuffered stdout
           - "main.py"
