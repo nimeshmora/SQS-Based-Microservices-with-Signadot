@@ -49,6 +49,7 @@ spec:
           - name: BASELINE_NAME
             value: "frontend-deployment"
         command:
+          - "opentelemetry-instrument"
           - "python"
           - "-u" # for unbuffered stdout
           - "main.py"

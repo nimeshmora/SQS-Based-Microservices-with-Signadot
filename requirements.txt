@@ -20,3 +20,8 @@ python-dotenv
 httpx==0.28.1
 pydantic==2.11.7
 redis==6.2.0
+
+# OpenTelemetry Auto-Instrumentation for logs & metrices collection
+opentelemetry-distro
+opentelemetry-exporter-otlp
+opentelemetry-instrumentation
