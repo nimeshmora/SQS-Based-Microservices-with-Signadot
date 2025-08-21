@@ -12,7 +12,7 @@ sys.path.insert(0, project_root)
 from modules.sqs.sqs_client import sqs_client, QUEUE_NAME
 from modules.sns.sns_client import sns_client
 from modules.pull_router.router_api import FILTER_ATTRIBUTE_NAME
-from modules.otel.baggage import extract_routing_key_from_baggage, extract_routing_key_from_header, inject_baggage_into_message_header
+from modules.otel.baggage import extract_routing_key_from_baggage, http_getter
 from modules.events.event import register_event
 from modules.logger.logger import get_logger
 from modules.DataTransferObjects.RequestResponseDto import ProduceMessage, ErrorResponse
@@ -40,8 +40,7 @@ async def produce_message(message: ProduceMessage, request: Request):
         """
         Receives a message and forwards it to an SQS queue or an SNS topic.
         """
-        ctx = extract_routing_key_from_header(request.headers)
-
+        
         msg_dict = message.model_dump()
 
         event_description = (
@@ -50,14 +49,11 @@ async def produce_message(message: ProduceMessage, request: Request):
             else 'Sending produce request to SQS queue'
         )        
 
-        message_attributes = {}
-        routing_key = inject_baggage_into_message_header(message_attributes, ctx)
-
         try:
             register_event(
                 event_description,
                 msg_dict,
-                routing_key
+                extract_routing_key_from_baggage(request.headers, http_getter)
             )
         except IOError as e:
             logger.error(f"Failed to register event: {e}")
@@ -68,16 +64,14 @@ async def produce_message(message: ProduceMessage, request: Request):
             logger.info(f"Publishing message to SNS topic: {SNS_TOPIC_ARN}")
             response = sns_client.publish(
                 TopicArn=SNS_TOPIC_ARN,
-                Message=json.dumps(msg_dict),
-                MessageAttributes=message_attributes,
+                Message=json.dumps(msg_dict)
             )
         else:
             # Send message to SQS queue
             logger.info(f"Sending message to SQS queue: {SQS_QUEUE_URL}")
             response = sqs_client.send_message(
                 QueueUrl=SQS_QUEUE_URL,
-                MessageBody=json.dumps(msg_dict),
-                MessageAttributes=message_attributes,
+                MessageBody=json.dumps(msg_dict)
             )
         logger.info(response)
         return {}

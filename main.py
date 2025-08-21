@@ -15,7 +15,7 @@ def run_producer(queue_url: str, topic_arn: str):
     env["SQS_QUEUE_URL"] = queue_url
     env["SNS_TOPIC_ARN"] = topic_arn
 
-    command = ["uvicorn", "apps.producer.app:app", "--host", "0.0.0.0", "--port", "8000"]
+    command = ["opentelemetry-instrument", "uvicorn", "apps.producer.app:app", "--host", "0.0.0.0", "--port", "8000"]
     logger.info(f"Starting producer server with command: {' '.join(command)}")
     # Pass the modified environment to the subprocess
     process = subprocess.Popen(command, env=env)
@@ -31,7 +31,7 @@ def run_frontend():
     # Launches the FastAPI frontend app using Uvicorn as a subprocess
     # and handles graceful shutdown on KeyboardInterrupt (Ctrl+C).
 
-    command = ["uvicorn", "apps.frontend.app:app", "--host", "0.0.0.0", "--port", "8000"]
+    command = ["opentelemetry-instrument", "uvicorn", "apps.frontend.app:app", "--host", "0.0.0.0", "--port", "8000"]
     logger.info(f"Starting frontend server with command: {' '.join(command)}")
     # Pass the modified environment to the subprocess
     process = subprocess.Popen(command)

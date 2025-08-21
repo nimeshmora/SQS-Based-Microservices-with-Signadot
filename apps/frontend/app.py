@@ -15,7 +15,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..
 sys.path.insert(0, project_root)
 
 
-from modules.otel.baggage import extract_routing_key_from_baggage, extract_routing_key_from_header, inject_baggage_into_request_header
+from modules.otel.baggage import extract_routing_key_from_baggage, http_getter
 from modules.events.event import register_event, get_events
 from modules.pull_router.router_api import FILTER_ATTRIBUTE_NAME
 from modules.DataTransferObjects.RequestResponseDto import ProduceMessage, ErrorResponse
@@ -55,19 +55,14 @@ async def generic_exception_handler(request: Request, exc: Exception):
 async def produce_message(message: ProduceMessage, request: Request):
     """
     Receives a message and forwards it to the producer service.
-    """
-    ctx = extract_routing_key_from_header(request.headers)
-    
-    msg_dict = message.model_dump()    
-
-    headers = {'Content-Type': 'application/json'}
-    routing_key = inject_baggage_into_request_header(headers, ctx)
+    """    
+    msg_dict = message.model_dump()
 
     try:
         register_event(
             'Sending produce request to producer API',
             msg_dict,
-            routing_key
+            extract_routing_key_from_baggage(request.headers, http_getter)
         )
     except IOError as e:
         logger.error(f"Failed to register event: {e}")
@@ -81,7 +76,7 @@ async def produce_message(message: ProduceMessage, request: Request):
             producer_req = await client.post(
                 producer_url,
                 json=msg_dict,
-                headers=headers
+                headers={'Content-Type': 'application/json'}
             )
             producer_req.raise_for_status() # Raise exception for 4xx/5xx responses
         except httpx.RequestError as e:

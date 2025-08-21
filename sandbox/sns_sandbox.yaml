@@ -14,5 +14,4 @@ spec:
     customizations:
       env:
         - name: SNS_FANOUT_PUBLISH
-          value: "true"
-    
+          value: "true"    
