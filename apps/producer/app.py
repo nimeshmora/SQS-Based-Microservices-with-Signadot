@@ -12,7 +12,7 @@ sys.path.insert(0, project_root)
 from modules.sqs.sqs_client import sqs_client, QUEUE_NAME
 from modules.sns.sns_client import sns_client
 from modules.pull_router.router_api import FILTER_ATTRIBUTE_NAME
-from modules.otel.baggage import extract_routing_key_from_baggage
+from modules.otel.baggage import extract_routing_key_from_baggage, extract_routing_key_from_header, inject_baggage_into_message_header
 from modules.events.event import register_event
 from modules.logger.logger import get_logger
 from modules.DataTransferObjects.RequestResponseDto import ProduceMessage, ErrorResponse
@@ -40,16 +40,18 @@ async def produce_message(message: ProduceMessage, request: Request):
         """
         Receives a message and forwards it to an SQS queue or an SNS topic.
         """
-        baggage_header = request.headers.get(FILTER_ATTRIBUTE_NAME)
-        routing_key = extract_routing_key_from_baggage(baggage_header)
-        
+        ctx = extract_routing_key_from_header(request.headers)
+
         msg_dict = message.model_dump()
 
         event_description = (
             'Sending produce request to SNS topic'
             if SNS_FANOUT_PUBLISH
             else 'Sending produce request to SQS queue'
-        )
+        )        
+
+        message_attributes = {}
+        routing_key = inject_baggage_into_message_header(message_attributes, ctx)
 
         try:
             register_event(
@@ -60,13 +62,6 @@ async def produce_message(message: ProduceMessage, request: Request):
         except IOError as e:
             logger.error(f"Failed to register event: {e}")
             # Not re-throwing, as the original code just logs the error and continues.
-
-        message_attributes = {}
-        if baggage_header:
-            message_attributes[FILTER_ATTRIBUTE_NAME] = {
-                "StringValue": baggage_header,
-                "DataType": "String",
-            }
 
         if SNS_FANOUT_PUBLISH:
             # Publish message to SNS topic

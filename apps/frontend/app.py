@@ -15,7 +15,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..
 sys.path.insert(0, project_root)
 
 
-from modules.otel.baggage import extract_routing_key_from_baggage
+from modules.otel.baggage import extract_routing_key_from_baggage, extract_routing_key_from_header, inject_baggage_into_request_header
 from modules.events.event import register_event, get_events
 from modules.pull_router.router_api import FILTER_ATTRIBUTE_NAME
 from modules.DataTransferObjects.RequestResponseDto import ProduceMessage, ErrorResponse
@@ -56,10 +56,12 @@ async def produce_message(message: ProduceMessage, request: Request):
     """
     Receives a message and forwards it to the producer service.
     """
-    baggage_header = request.headers.get(FILTER_ATTRIBUTE_NAME)
-    routing_key = extract_routing_key_from_baggage(baggage_header)
+    ctx = extract_routing_key_from_header(request.headers)
     
-    msg_dict = message.model_dump()
+    msg_dict = message.model_dump()    
+
+    headers = {'Content-Type': 'application/json'}
+    routing_key = inject_baggage_into_request_header(headers, ctx)
 
     try:
         register_event(
@@ -70,10 +72,6 @@ async def produce_message(message: ProduceMessage, request: Request):
     except IOError as e:
         logger.error(f"Failed to register event: {e}")
         # Not re-throwing, as the original code just logs the error and continues.
-
-    headers = {'Content-Type': 'application/json'}
-    if baggage_header:
-        headers[FILTER_ATTRIBUTE_NAME] = baggage_header
 
     producer_url = f"http://{PRODUCER_HOST}:{PRODUCER_PORT}/api/produce"
     logger.info(f"Forwarding request to producer at {producer_url}")
