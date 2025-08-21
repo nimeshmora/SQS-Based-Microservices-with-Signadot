@@ -11,8 +11,4 @@ spec:
       kind: Deployment
       name: consumer-deployment
       namespace: aws-sqs-app
-    customizations:
-      env:
-        - name: SANDBOX_NAME
-          value: "sqs-counsumer-sandbox"
          
