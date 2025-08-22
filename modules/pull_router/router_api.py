@@ -18,6 +18,7 @@ DEFAULT_BASELINE_NAME = "consumer" # Placeholder, configure as needed
 DEFAULT_REFRESH_INTERVAL = 5 # seconds
 ROUTING_KEY = "sd-routing-key"
 FILTER_ATTRIBUTE_NAME = "baggage"
+ENV_SANDBOX_KEY = "SIGNADOT_SANDBOX_NAME"
 
 class RoutesAPIClient:
 

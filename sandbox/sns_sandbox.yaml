@@ -13,8 +13,5 @@ spec:
       namespace: aws-sqs-app
     customizations:
       env:
-        - name: SANDBOX_NAME
-          value: "sns-sqs-fanout-sandbox"
         - name: SNS_FANOUT_PUBLISH
-          value: "true"
-    
+          value: "true"    

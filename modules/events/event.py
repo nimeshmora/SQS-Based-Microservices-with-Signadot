@@ -3,6 +3,7 @@ import json
 from datetime import datetime, timezone
 import sys
 from modules.logger.logger import get_logger
+from modules.pull_router.router_api import ENV_SANDBOX_KEY
 
 # Import the initialized redis_client
 # The application should handle the case where redis_client is None.
@@ -13,7 +14,7 @@ logger = get_logger(__name__)
 # This replaces the import from a config file in the original JS.
 BASELINE_NAMESPACE = os.environ.get('BASELINE_NAMESPACE', 'default')
 BASELINE_NAME = os.environ.get('BASELINE_NAME', '')
-SANDBOX_NAME = os.environ.get('SANDBOX_NAME', '')
+SANDBOX_NAME = os.environ.get(ENV_SANDBOX_KEY, '')
 
 def _check_redis_client():
     # Helper to check if Redis client is available.

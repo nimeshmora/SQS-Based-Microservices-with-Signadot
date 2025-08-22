@@ -13,7 +13,7 @@ sys.path.insert(0, project_root)
 
 
 from modules.sqs.sqs_client import sqs_client, create_queue, QUEUE_NAME
-from modules.pull_router.router_api import RoutesAPIClient, FILTER_ATTRIBUTE_NAME
+from modules.pull_router.router_api import RoutesAPIClient, FILTER_ATTRIBUTE_NAME, ENV_SANDBOX_KEY
 from modules.otel.baggage import extract_routing_key_from_baggage
 from modules.events.event import register_event
 from modules.logger.logger import get_logger
@@ -22,7 +22,7 @@ logger = get_logger(__name__)
 
 load_dotenv()
 
-SANDBOX_NAME=os.getenv("SANDBOX_NAME", "")
+SANDBOX_NAME=os.getenv(ENV_SANDBOX_KEY, "")
 
 def consume_message(sqs_queue_url: str, router_api: RoutesAPIClient):
     
@@ -43,8 +43,7 @@ def consume_message(sqs_queue_url: str, router_api: RoutesAPIClient):
                 message_body_dict = json.loads(message["Body"])
                 message_attributes = message.get("MessageAttributes", {})
 
-                baggage = message_attributes[FILTER_ATTRIBUTE_NAME]["StringValue"] if FILTER_ATTRIBUTE_NAME in message_attributes else ""
-                routing_key = extract_routing_key_from_baggage(baggage) if baggage else None
+                routing_key = extract_routing_key_from_baggage(message_attributes)
 
                 if not router_api.should_process(routing_key):
                     # This message is not for this consumer instance. Make it immediately visible again for other consumers.

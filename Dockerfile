@@ -14,6 +14,18 @@ COPY requirements.txt .
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
+# Install OpenTelemetry SDK + instrumentations
+RUN pip install --no-cache-dir \
+    opentelemetry-distro \
+    opentelemetry-exporter-otlp \
+    opentelemetry-instrumentation-asgi \
+    opentelemetry-instrumentation-fastapi \
+    opentelemetry-instrumentation-requests \
+    opentelemetry-instrumentation-botocore
+
+# Install OpenTelemetry bootstrap separately
+RUN opentelemetry-bootstrap -a install
+
 # Copy the rest of the application's code into the container
 COPY . .
 

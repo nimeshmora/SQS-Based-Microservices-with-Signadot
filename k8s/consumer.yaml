@@ -29,7 +29,7 @@ spec:
           - secretRef:
               name: aws-credentials
         env:
-          - name: SANDBOX_NAME
+          - name: SIGNADOT_SANDBOX_NAME
             value: ""
           - name: ROUTES_API_ROUTE_SERVER_ADDR
             value: "http://routeserver.signadot.svc:7778"
